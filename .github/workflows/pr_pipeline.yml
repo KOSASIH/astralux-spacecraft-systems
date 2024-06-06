@@ -1,0 +1,54 @@
+name: PR Pipeline
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      - name: Run tests
+        run: |
+          pytest -v
+      - name: Build and deploy
+        run: |
+          # Build and deploy code here
+          # For example, you can use a Docker image to build and deploy your spacecraft's systems
+          docker build -t astralux-spacecraft-systems.
+          docker push astralux-spacecraft-systems
+
+  grype-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install Grype
+        run: |
+          curl -sSf https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh
+      - name: Run Grype scan
+        run: |
+          grype --add-cpes-if-none --distro alpine:3.10 sbom:some-alpine-3.10.spdx.json
+
+  deploy-to-k8s:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Deploy to Kubernetes
+        run: |
+          # Deploy to Kubernetes cluster
+          # For example, you can use a Kubernetes deployment YAML file
+          kubectl apply -f deployment.yaml
+
+env:
+  MYSQL_HOST: mysql
+  MYSQL_USER: user
+  MYSQL_PASS: password
+  MYSQL_PORT: 3351
