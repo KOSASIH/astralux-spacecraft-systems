@@ -1,0 +1,9 @@
+// helloworld.car.l2.elf - a simple bare-metal program for Carfield
+
+#include <stdint.h>
+#include <stdio.h>
+
+int main() {
+    printf("Hello, World!\n");
+    return 0;
+}
