@@ -1,0 +1,25 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Login to AWS
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE }}
+          role-session-name: GitHubActionsSession
+          aws-region: eu-central-1
+      - name: Terraform init
+        run: terraform init -backend-config="environments/prod_backend.hcl"
+      - name: Terraform plan
+        run: terraform plan -var-file="environments/prod.tfvars" -out ${{ env.prod_artifact_name }}
+      - name: Terraform apply
+        run: terraform apply -var-file="environments/prod.tfvars" -auto-approve
